@@ -1,25 +1,27 @@
 /* VOICE   occasion, calm: an independent product lab's notebook
    IDEA    a research journal: big plain statements, a metadata table, figures with captions
    PICTURE real product screenshots, framed like plates in a journal; clear placeholders where none exist
-   COLOUR  warm white ground, near-black ink, muted grey second voice, one ultramarine accent
-   TYPE    Schibsted Grotesk for display, Inter for text, JetBrains Mono for labels and metadata
+   COLOUR  cool mineral ground, deep ink, grey-green second voice, one deep teal accent
+   TYPE    Schibsted Grotesk for display, Inter for text
    LAYOUT  12-column editorial grid; heading left, text right; stacks to one column under 760px */
 
 :root{
   color-scheme:light dark;
-  --bg:light-dark(#f7f6f2,#121211);
-  --bg2:light-dark(#efede6,#1b1b19);
-  --ink:light-dark(#151514,#ecebe6);
-  --mute:light-dark(#6b6a64,#9c9b94);
-  --line:light-dark(#dcd9d0,#2e2d2a);
-  --acc:light-dark(#2b3fd1,#8c9bff);
-  --acc-ink:light-dark(#ffffff,#0f1020);
-  --ph:light-dark(#e8e5dc,#22211f);
+  --bg:light-dark(#f1f4f3,#0d1415);
+  --bg2:light-dark(#e1e8e6,#172123);
+  --ink:light-dark(#0f1a1c,#e6eeec);
+  --mute:light-dark(#5b6a6c,#97a6a5);
+  --line:light-dark(#d1dcda,#263335);
+  --acc:light-dark(#0e6b66,#4fb8ad);
+  --acc-ink:light-dark(#f1f4f3,#0d1415);
+  --ph:light-dark(#e4ebe9,#152022);
+  --close:light-dark(#0e3b3a,#0a2b2a);
+  --close-ink:#eaf2f0;
   --max:1240px;
   --gut:max(5vw,16px);
   --display:"Schibsted Grotesk",system-ui,sans-serif;
   --text:"Inter",system-ui,sans-serif;
-  --mono:"JetBrains Mono",ui-monospace,Menlo,monospace;
+  --mono:var(--text);
 }
 :root[data-theme=light]{color-scheme:light}
 :root[data-theme=dark]{color-scheme:dark}
@@ -163,11 +165,11 @@ a:hover .arrow{transform:translateX(3px)}
 @media(max-width:600px){.blist li{grid-template-columns:minmax(0,1fr);gap:8px}}
 
 /* closing CTA */
-.close{background:var(--ink);color:var(--bg)}
+.close{background:var(--close);color:var(--close-ink)}
 .close .h2{max-width:14ch}
-.close .lead{color:color-mix(in srgb,var(--bg) 70%,var(--ink))}
-.close .btn{border-color:var(--bg)}
-.close .btn.primary{background:var(--bg);color:var(--ink)}
+.close .lead{color:color-mix(in srgb,var(--close-ink) 75%,var(--close))}
+.close .btn{border-color:var(--close-ink)}
+.close .btn.primary{background:var(--close-ink);color:var(--close)}
 .close .btn.primary:hover{background:var(--acc);border-color:var(--acc);color:var(--acc-ink)}
 .close .wrap{display:grid;grid-template-columns:minmax(0,7fr) minmax(0,5fr);gap:32px;align-items:end}
 @media(max-width:760px){.close .wrap{grid-template-columns:minmax(0,1fr)}}
