@@ -1,0 +1,231 @@
+<!doctype html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover">
+<meta name="claude:viewport-fit-sides" content="cover">
+<title>Carna case study | Faisal Elbendary</title>
+<meta name="description" content="Research-driven wellness tools: a workout generator, a recipe finder and an intake questionnaire.">
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500&family=JetBrains+Mono:wght@400;500&family=Schibsted+Grotesk:wght@500;600;700&display=swap">
+<link rel="stylesheet" href="../assets/styles.css">
+</head>
+<body>
+<a class="skip" href="#main">Skip to content</a>
+<header class="top">
+  <div class="wrap">
+    <a class="brand" href="../index.html">Faisal Elbendary <span>/ product lab</span></a>
+    <nav class="nav" aria-label="Main">
+      <a class="home" href="../index.html">Home</a>
+      <a href="../projects.html" aria-current="page">Projects</a>
+      <a href="../about.html">About</a>
+      <a class="cta" href="../contact.html">Contact</a>
+    </nav>
+  </div>
+</header>
+<main id="main">
+<section class="cs-hero">
+  <div class="wrap grid2">
+    <div>
+      <p class="eyebrow"><a class="link" href="../projects.html" style="font:inherit">&larr; Projects</a></p>
+      <h1>Carna</h1>
+      <p class="pos">Research-driven tools for everyday health decisions.</p>
+    </div>
+    <div>
+      <p class="lead" style="margin-top:8px">Carna is a wellness project built around five pillars: movement, nutrition, sleep, mind and community. I researched each area, turned the evidence into rules, and built the tools that apply them: a workout generator, a recipe finder backed by its own recipe database, an intake questionnaire and a daily tracking app.</p>
+      <table class="facts">
+        <tr><th scope="row">Category</th><td>Wellness &amp; Research</td></tr>
+        <tr><th scope="row">Status</th><td><span class="status">Active development</span></td></tr>
+        <tr><th scope="row">Role</th><td>Solo: research, product design, build</td></tr>
+        <tr><th scope="row">Year</th><td>2026</td></tr>
+        <tr><th scope="row">Capabilities</th><td><ul class="tags"><li>Research synthesis</li><li>Data pipeline</li><li>Recommendation logic</li><li>Product design</li></ul></td></tr>
+      </table>
+      <div class="btns">
+        <span class="btn" aria-disabled="true">Try the App: link coming soon</span>
+        <a class="btn ghost" href="#features">See How It Works</a>
+      </div>
+    </div>
+  </div>
+</section>
+
+<div class="wrap cs-visual">
+  <figure class="shot">
+    <div class="frame"><img src="../assets/carna/recipe-question.webp" alt="Carna's recipe finder asking 'Do you have bell peppers?' with Yes, No and Not sure buttons, and the closest recipe so far" width="1600" height="1075"></div>
+    <figcaption>The recipe finder asks one question at a time, choosing the ingredient that best separates the closest recipes.</figcaption>
+  </figure>
+</div>
+
+<section class="cs-sec">
+  <div class="wrap split">
+    <h2 class="label">The Problem</h2>
+    <div class="prose">
+      <p>People who want to eat and move better are not short of information. They are short of a way to apply it. Nutrition advice conflicts, exercise programmes assume a gym and a coach, and recipe sites are organised for browsing, not for "what can I make tonight that fits how I want to eat?"</p>
+      <p>Generic apps count calories or log workouts but leave the decisions to the user. The result is familiar: good intentions, a lot of reading, and habits that don't stick because each day starts from a blank page.</p>
+    </div>
+  </div>
+</section>
+
+<section class="cs-sec">
+  <div class="wrap split">
+    <h2 class="label">Understanding the Problem<small>Research &amp; discovery</small></h2>
+    <div>
+      <div class="prose">
+        <p>I started with the questions a good coach answers for a client, then looked for evidence or established standards behind each one.</p>
+        <ul>
+          <li><strong>Food:</strong> nutrient values come from USDA reference data. I built an ingredient taxonomy of 413 entries, each linked to a USDA record, so every recipe's nutrition can be calculated rather than trusted from the source site.</li>
+          <li><strong>Eating pattern:</strong> a whole-food, plant-based rubric with seven principles (food quality, fibre, glycaemic impact, fats, calorie density and more), each with explicit thresholds such as at least 3 g of fibre per 100 kcal.</li>
+          <li><strong>Activity:</strong> the intake questionnaire uses the IPAQ short form, a validated physical-activity measure, scored with its published rules.</li>
+          <li><strong>Training:</strong> workouts are balanced across six movement patterns, with a limit on exercises that load the spine heavily.</li>
+        </ul>
+        <p>One insight shaped the recipe work: comparing recipes per serving is misleading, because servings vary. Comparing per 100 kcal is fair. The main assumption is that the scoring heuristics, such as satiety and gut friendliness, are reasonable estimates. They are labelled as heuristics, not medical advice.</p>
+      </div>
+      <div class="funnel" aria-label="Recipe data pipeline, in numbers">
+        <div class="r"><span>Recipe pages fetched from 73 approved sites</span><span class="v">10,085</span><span class="bar"><i style="width:100%"></i></span></div>
+        <div class="r"><span>Structured recipes extracted</span><span class="v">8,904</span><span class="bar"><i style="width:88.3%"></i></span></div>
+        <div class="r"><span>Recipes in the public recipe finder</span><span class="v">8,750</span><span class="bar"><i style="width:86.8%"></i></span></div>
+        <div class="r"><span>Recipes reviewed one by one against the plant-based rubric</span><span class="v">307</span><span class="bar"><i style="width:3%"></i></span></div>
+      </div>
+      <p class="small">Counts from the project's database snapshot, November 2026. 107,286 ingredient lines were parsed and matched along the way.</p>
+    </div>
+  </div>
+</section>
+
+<section class="cs-sec">
+  <div class="wrap split">
+    <h2 class="label">The Approach</h2>
+    <div>
+      <div class="prose">
+        <p>Rather than one large app, Carna is a few small tools that share the same rules. Each answers one question: what should I train today, what can I cook with what I have, and where am I starting from.</p>
+        <p>The research lives in data and rules, not in articles. That means a recommendation can always be explained: this recipe ranked first because you have four of its six key ingredients; this exercise was skipped because you did it last time.</p>
+      </div>
+      <ol class="flow" aria-label="How Carna turns research into recommendations">
+        <li><b>Evidence</b><span>USDA nutrient data, IPAQ, training principles, a written rubric</span></li>
+        <li><b>Data &amp; rules</b><span>Recipe database, ingredient taxonomy, movement groups, scoring</span></li>
+        <li><b>Your inputs</b><span>Ingredients at hand, equipment, split, diet and allergens</span></li>
+        <li><b>Recommendation</b><span>A workout or a ranked recipe, with the reason shown</span></li>
+      </ol>
+    </div>
+  </div>
+</section>
+
+<section class="cs-sec" id="features">
+  <div class="wrap">
+    <div class="split" style="margin-bottom:clamp(40px,5vw,72px)"><h2 class="label">What It Does</h2><p class="lead" style="margin:0">Four features, each saving a decision someone would otherwise make from scratch.</p></div>
+    <div class="feats">
+      <div class="feat">
+        <div class="feat-text">
+          <span class="mono" style="color:var(--mute)">Feature 01</span>
+          <h3>Workout generator</h3>
+          <p>Builds a balanced full-body session from your own exercise lists: one exercise per main movement pattern, plus accessories. Any exercise can be swapped, and the rules still hold.</p>
+          <p class="value">You get variety without planning, and never two heavy spinal-load lifts on back-to-back days.</p>
+        </div>
+        <figure class="shot"><div class="phone"><img src="../assets/carna/workout-generator.webp" alt="A generated Full Body 1 workout: Lat Pulldown 4 by 6, Back Tuck Lever, Dips, Step-Up and Lateral Raise, each with a swap button" width="780" height="1688" loading="lazy"></div><figcaption>A generated session, ready to start. The shuffle icon swaps a single exercise.</figcaption></figure>
+      </div>
+      <div class="feat">
+        <div class="feat-text">
+          <span class="mono" style="color:var(--mute)">Feature 02</span>
+          <h3>Recipe finder</h3>
+          <p>Name a few things in your kitchen. It asks about a handful more, then ranks recipes by how much you can already cover, accepting close substitutes such as black beans for kidney beans.</p>
+          <p class="value">"What can I cook?" becomes a two-minute answer instead of twenty minutes of browsing.</p>
+        </div>
+        <figure class="shot"><div class="frame"><img src="../assets/carna/recipe-results.webp" alt="Recipe results: Farro and Bean Soup 78%, Vegan chana masala 77%, each with calories, protein, diet labels and missing ingredients" width="1600" height="1075" loading="lazy"></div><figcaption>Results show the match, the key ingredients you have, what else is needed and possible swaps.</figcaption></figure>
+      </div>
+      <div class="feat">
+        <div class="feat-text">
+          <span class="mono" style="color:var(--mute)">Feature 03</span>
+          <h3>Research-backed labels</h3>
+          <p>Every recipe carries calculated calories, protein, fibre, diet and allergen labels, and filters for eating styles. Recipes reviewed against the plant-based rubric get their own tag.</p>
+          <p class="value">People can filter by what matters to them and trust where the numbers came from.</p>
+        </div>
+        <div class="ph" style="aspect-ratio:16/10"><span><b>Placeholder</b>Filters panel: diet styles, allergens, meal, time</span></div>
+      </div>
+      <div class="feat">
+        <div class="feat-text">
+          <span class="mono" style="color:var(--mute)">Feature 04</span>
+          <h3>Personal starting point</h3>
+          <p>A ten-section intake questionnaire covers goals, health checks and each pillar, including the IPAQ activity questions. Answers go to a private spreadsheet and are scored automatically.</p>
+          <p class="value">Recommendations start from the person's real situation, not a generic template.</p>
+        </div>
+        <figure class="shot"><div class="frame"><img src="../assets/carna/intake-ipaq.webp" alt="The intake questionnaire's activity section asking how many days in the last 7 days the person did vigorous activity, with a progress sidebar of 10 sections" width="1600" height="1075" loading="lazy"></div><figcaption>The activity section uses the IPAQ short form's official wording.</figcaption></figure>
+      </div>
+    </div>
+  </div>
+</section>
+
+<section class="cs-sec">
+  <div class="wrap split">
+    <h2 class="label">How It Works</h2>
+    <div class="prose">
+      <h3>A recipe data pipeline</h3>
+      <p>A command-line tool crawls approved recipe sites politely (robots.txt obeyed, a pause between requests), extracts structured recipes, parses each ingredient line, matches it to the taxonomy and converts it to grams. Nutrition is then computed per serving and per 100 kcal, and duplicates are removed. Only facts are exported to the public tool, never the sites' method text.</p>
+      <h3>Rules as a search problem</h3>
+      <p>The workout generator is a small randomised search. It tries to satisfy every rule; if no workout can, it relaxes the least important rule first instead of failing.</p>
+      <h3>Asking the right question</h3>
+      <p>The recipe finder looks at the leading recipes and asks about the ingredient that appears in many of them but is still unknown, so each answer reshuffles the list as much as possible.</p>
+    </div>
+  </div>
+</section>
+
+<section class="cs-sec">
+  <div class="wrap">
+    <div class="split" style="margin-bottom:40px"><h2 class="label">Designing the Experience</h2><p class="lead" style="margin:0">Most decisions were about removing things.</p></div>
+    <ul class="decisions">
+      <li><h3>Questions instead of a form</h3><dl><dt>Decision</dt><dd>Ask about one ingredient at a time.</dd><dt>Rationale</dt><dd>Nobody can list their whole kitchen from memory.</dd><dt>Benefit</dt><dd>A useful answer after a few taps.</dd></dl></li>
+      <li><h3>Read the title first</h3><dl><dt>Decision</dt><dd>Classify dishes by title before the site's own category.</dd><dt>Rationale</dt><dd>Sites file sauces and dips under main dishes.</dd><dt>Benefit</dt><dd>"Main dish" results are actually meals.</dd></dl></li>
+      <li><h3>One card per screen</h3><dl><dt>Decision</dt><dd>Each app tab has a single summary card; entries are plain rows.</dd><dt>Rationale</dt><dd>Early versions felt crowded.</dd><dt>Benefit</dt><dd>The week's picture is readable at a glance.</dd></dl></li>
+      <li><h3>A friend, not a coach</h3><dl><dt>Decision</dt><dd>Warm, short copy with no guilt.</dd><dt>Rationale</dt><dd>Shame makes people stop logging.</dd><dt>Benefit</dt><dd>"A 20-minute walk counts" keeps people coming back.</dd></dl></li>
+    </ul>
+    <div class="figs">
+      <figure class="shot"><div class="phone"><img src="../assets/carna/app-move.webp" alt="Carna app Move tab: a week card, a build-a-workout option and an empty sessions list" width="780" height="1688" loading="lazy"><img src="../assets/carna/app-mind.webp" alt="Carna app Mind tab: a week of moods, stress and energy meters and today's journaling prompt" width="780" height="1688" loading="lazy"></div><figcaption>Move and Mind tabs share one layout: a heading, one week card, then entries.</figcaption></figure>
+      <figure class="shot"><div class="frame"><img src="../assets/carna/landing-home.webp" alt="Carna website home page" width="1600" height="1000" loading="lazy"></div><figcaption>The public website, which hosts the recipe finder and the questionnaire.</figcaption></figure>
+    </div>
+  </div>
+</section>
+
+<section class="cs-sec">
+  <div class="wrap split">
+    <h2 class="label">What I Learned</h2>
+    <div>
+      <table class="ledger">
+        <tr><th scope="row">Built</th><td>The recipe pipeline and database, the recipe finder, the workout generator, the intake questionnaire with automatic scoring, and the daily tracking app.</td></tr>
+        <tr><th scope="row">Tested</th><td>Automated tests cover the pipeline and matching logic. I use the tracking app and generator daily.</td></tr>
+        <tr><th scope="row">Assumed</th><td>That the scoring heuristics are sensible proxies, and that question-led search is easier than filters for most people.</td></tr>
+        <tr><th scope="row">To validate</th><td>Whether other people find the recommendations useful and keep using the tools.</td></tr>
+        <tr><th scope="row">Next</th><td><em class="todo">next development priority</em></td></tr>
+      </table>
+      <p class="prose" style="margin-top:24px">The biggest lesson: the value was in the data work. Cleaning ingredient lines and checking labels took longer than any screen, and it is what makes the recommendations believable.</p>
+    </div>
+  </div>
+</section>
+
+<section class="cs-sec">
+  <div class="wrap">
+    <div class="split" style="margin-bottom:48px">
+      <h2 class="label">Try it</h2>
+      <div>
+        <p class="lead" style="margin:0">The app and the website's recipe finder will be linked here once the domains are set up.</p>
+        <div class="btns"><span class="btn" aria-disabled="true">Try the App: link coming soon</span><a class="btn primary" href="../contact.html">Ask me about it <span class="arrow" aria-hidden="true">&rarr;</span></a></div>
+      </div>
+    </div>
+    <nav class="pn" aria-label="More projects">
+      <a href="../projects/skillx.html"><small>Previous project</small><b>SkillX</b></a>
+      <a href="../projects/careerdb.html"><small>Next project</small><b>CareerDB</b></a>
+    </nav>
+  </div>
+</section>
+</main>
+<footer class="foot">
+  <div class="wrap">
+    <span>&copy; <span id="year">2026</span> Faisal Elbendary. Research, product design and build.</span>
+    <nav aria-label="Footer">
+      <a href="../index.html">Home</a>
+      <a href="../projects.html">Projects</a>
+      <a href="../about.html">About</a>
+      <a href="../contact.html">Contact</a>
+    </nav>
+  </div>
+</footer>
+<script src="../assets/site.js"></script>
+</body>
+</html>
