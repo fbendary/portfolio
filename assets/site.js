@@ -11,8 +11,8 @@
    device and no personal data is sent. Put the same Supabase URL and anon key as admin/config.js
    in the two lines below; while they're empty the beacon does nothing. Never runs on /admin. */
 {
-  const SUPABASE_URL = '';
-  const SUPABASE_ANON_KEY = '';
+  const SUPABASE_URL = 'https://zpdhxinhwnqafmzdjney.supabase.co';
+  const SUPABASE_ANON_KEY = 'sb_publishable_l4CJuGIIfmLm2EF5le98AQ_5ouUVn2l';
   try {
     const l = location;
     const off = !SUPABASE_URL || !SUPABASE_ANON_KEY || !/^https?:$/.test(l.protocol)
