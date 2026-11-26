@@ -1,0 +1,4 @@
+# Supabase CLI files that never belong in git
+functions/.env
+.temp/
+.branches/
