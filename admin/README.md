@@ -31,7 +31,8 @@ The free plan has no automatic backups. Download one now and then from the menu 
 ## What each screen is for
 
 - **Today**: one-tap quick log chips for your most used actions (with undo), follow-ups due, daily caps on the volume lanes, this week's targets, links-per-comment on the trust lanes, and new Inbox items.
-- **Inbox**: threads worth acting on. Paste a link (the channel, the place such as a subreddit, and a title are guessed from it), or paste F5Bot alert emails. Engaged logs the action; Make lead opens a lead; Skip hides it.
+- **Queue**: everything the Reddit collector brings in every hour (new posts and comments in the subreddits under Sources → Places, plus your saved Reddit searches). Four steps: **Triage** (copy a batch for Claude chat, paste back its picks: one line each, `id | why | angle`; the rest of the batch is passed), **Shortlist** (write the gist of each reply, copy the drafting prompt, paste back Claude's comments, read and approve each), **Ready to post** (Copy & open, then Mark posted; or copy the list for Claude in Chrome and mark the exported ones posted), **Posted**. Marking posted logs a comment on the activity log. Collected items nobody acted on are cleared after 7 days.
+- **Inbox**: threads you found yourself or pasted from alerts. Paste a link (the channel, the place such as a subreddit, and a title are guessed from it), or paste F5Bot alert emails. Engaged logs the action; Make lead opens a lead; Skip hides it.
 - **Leads**: the pipeline by stage (New → Contacted → Replied → Call booked → Client, plus Not now and Lost, which keep the furthest stage reached), with search and filters. In a lead, one-tap touches log the action, move the stage and set the next follow-up from the channel's default. Each stage is date-stamped the first time it's reached.
 - **Activity**: log a batch ("12 Facebook comments, 1 with a link"), for any day, and fix or delete anything in the log.
 - **Metrics**: Output by channel and week; Response with reply, lead and close rates by channel, template and place; Audience for the platform numbers; Site for visits, referrers and tracked links; a weekly form for the numbers you copy by hand; and the CSV import. The period switch (7, 30, 90 days, all) compares each figure with the previous period.
@@ -63,6 +64,10 @@ Right now the database uses the **open** rules: anyone with the anon key can rea
 6. In `admin/config.js`, set `REQUIRE_AUTH = true` and `OWNER_EMAIL` to your email. Deploy.
 
 From then on only your signed-in user can read or write anything, and the anon key can only insert page views. `OWNER_EMAIL` is visible to anyone who opens `admin/config.js`; it only decides where the sign-in link goes, while the database checks your user's id. To undo the lock, run `0002_policies_open.sql` again.
+
+## The Reddit collector
+
+The `importers` Edge Function is deployed to the project with the Reddit app's client ID and secret as Supabase secrets, and Supabase Cron runs it every hour at :07 (`select * from cron.job`). Add or remove subreddits under Sources → Places (a place named `r/<name>` on a Reddit channel; mark one banned or avoid to stop collecting it). Turn it off under Metrics → Import CSV → Importers, or with `select cron.unschedule('importer-reddit');`. Every run is listed under Metrics → Import CSV → Recent import runs. Run `supabase/migrations/0005_review_queue.sql` on a new project before using the Queue.
 
 ## Importers (optional)
 

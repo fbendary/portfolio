@@ -58,9 +58,9 @@ The function uses the service role key that Supabase gives every Edge Function. 
 
 ## Reddit
 
-What it does: signs in as your own account (a "script" app), records your karma for the current week, and runs every saved search whose link is on reddit.com through the API, adding posts from the past week to the Inbox (skipping NSFW posts and links already there).
+What it does: with app-only (read-only) access, collects every new post and comment since the last run in the subreddits under Places (one multireddit per flow, up to 1,000 of each an hour), plus your saved Reddit searches, into the Queue (`source = reddit_api`). Skips NSFW, stickied, AutoModerator and deleted items, and clears collected items nobody acted on after 7 days. If `REDDIT_USERNAME` and `REDDIT_PASSWORD` are also set, it signs in as you and records your karma.
 
-Secrets: `REDDIT_CLIENT_ID`, `REDDIT_CLIENT_SECRET`, `REDDIT_USERNAME`, `REDDIT_PASSWORD`, `REDDIT_USER_AGENT` (Reddit asks for the form `web:lead-desk:v1 (by /u/yourname)`).
+Secrets: `REDDIT_CLIENT_ID`, `REDDIT_CLIENT_SECRET`, `REDDIT_USER_AGENT` (Reddit asks for the form `web:lead-desk:v1 (by /u/yourname)`); optionally `REDDIT_USERNAME`, `REDDIT_PASSWORD`.
 
 Terms and limits, which decide whether this is usable at all:
 
