@@ -418,9 +418,12 @@ export async function render(root, ctx) {
 
     function importersPanel() {
       const ABOUT = {
-        reddit: 'Karma, and new posts from your saved Reddit searches into the Inbox. Needs Reddit API access, which Reddit now approves case by case.',
+        reddit: 'Every new post and comment in your subreddits (Sources → Places) and saved Reddit searches, into the Queue every hour.',
         f5bot: 'Forwarded F5Bot alert emails into the Inbox. Pasting alerts in the Inbox works without it.',
         csv: 'CSV files posted by an automation. This page’s import works without it.',
+        hn: 'Hacker News stories and comments matching each flow’s phrases (settings → importers → hn → queries), into the Queue every hour.',
+        stackexchange: 'New questions on chosen Stack Exchange sites (Workplace, Software Recommendations, Web Apps / Google Sheets), into the Queue every hour.',
+        bluesky: 'Bluesky posts matching each flow’s phrases, into the Queue every hour.',
       };
       const cur = () => refs.settings.importers || {};
       return h('section', { class: 'panel' },

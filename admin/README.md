@@ -69,6 +69,8 @@ From then on only your signed-in user can read or write anything, and the anon k
 
 The `importers` Edge Function is deployed to the project with the Reddit app's client ID and secret as Supabase secrets, and Supabase Cron runs it every hour at :07 (`select * from cron.job`). Add or remove subreddits under Sources → Places (a place named `r/<name>` on a Reddit channel; mark one banned or avoid to stop collecting it). Turn it off under Metrics → Import CSV → Importers, or with `select cron.unschedule('importer-reddit');`. Every run is listed under Metrics → Import CSV → Recent import runs. Run `supabase/migrations/0005_review_queue.sql` on a new project before using the Queue.
 
+Hacker News, Stack Exchange and Bluesky are collected the same way, every hour at :17, :27 and :37, using their free public APIs (no keys). Their phrases (or Stack Exchange sites, as `site` or `site:tag`) per flow are in the `settings` table under `importers` → `hn` / `stackexchange` / `bluesky` → `queries`; run `supabase/migrations/0006_more_collectors.sql` on a new project. A Claude Code scheduled task (every 3 hours) reads the new items, shortlists the best with a reason, an angle and a first draft, and passes the rest; you edit and approve on the Queue.
+
 ## Importers (optional)
 
 `supabase/functions/importers/` holds the plumbing for automation: Reddit (karma and saved searches into the Inbox), F5Bot (forwarded alert emails) and CSV, all behind one interface, every run logged in `import_runs`, all off by default. Its README explains what each needs and its terms of use. In short: Reddit API access now needs Reddit's approval, and LinkedIn, Upwork and Facebook have no public API for these numbers, so those stay manual or CSV.

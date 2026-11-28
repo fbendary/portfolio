@@ -13,6 +13,8 @@ const STEPS = [
 ];
 const COLS = 'id,flow_key,channel_key,place_id,url,title,snippet,found_at,source,score,status,kind,author,queue,reason,angle,gist,draft,exported_at';
 const sid = (id) => id.slice(0, 8);
+const SOURCE = { reddit_api: 'Reddit', hn_api: 'Hacker News', stackexchange_api: 'Stack Exchange', bluesky_api: 'Bluesky', f5bot: 'F5Bot', manual: 'Added by hand' };
+const where = (it) => placeName(it.place_id) || (it.source === 'stackexchange_api' ? `Stack Exchange · ${(it.url.match(/\/\/([^.]+)\./) || [])[1] || ''}` : SOURCE[it.source] || it.source);
 
 export async function render(root, ctx) {
   let step = STEPS.some((x) => x.value === ctx.sub) ? ctx.sub : 'triage';
@@ -33,7 +35,7 @@ export async function render(root, ctx) {
       const [untriaged, shortlist, ready] = await Promise.all([
         n((b) => b.is('queue', null).eq('status', 'new')), n((b) => b.eq('queue', 'shortlist')), n((b) => b.eq('queue', 'approved')),
       ]);
-      counts.textContent = `${fmt(untriaged)} to triage · ${fmt(shortlist)} shortlisted · ${fmt(ready)} ready to post. Reddit is collected every hour at :07.`;
+      counts.textContent = `${fmt(untriaged)} to triage · ${fmt(shortlist)} shortlisted · ${fmt(ready)} ready to post. Reddit, Hacker News, Stack Exchange and Bluesky are collected every hour.`;
       const views = { triage, shortlist: shortlistView, post: postView, posted: postedView };
       const el = await views[step]({ untriaged, shortlist, ready });
       if (ctx.alive()) mount(body, el);
@@ -42,8 +44,8 @@ export async function render(root, ctx) {
   }
 
   function head(title, text, ...acts) { return h('div', { class: 'panel-head' }, h('div', null, h('h2', null, title), text ? h('p', null, text) : null), acts.length ? h('div', { class: 'toolbar' }, acts) : null); }
-  function meta(it) { return h('div', { class: 'meta' }, flowTag(it.flow_key, ctx.flow), it.place_id ? placeName(it.place_id) : '', ` · ${it.kind === 'comment' ? 'comment' : 'post'}`,
-    it.author ? ` by u/${it.author}` : '', ` · ${relDay(it.found_at.slice(0, 10))}`, it.score != null ? ` · ${it.score} points` : ''); }
+  function meta(it) { return h('div', { class: 'meta' }, flowTag(it.flow_key, ctx.flow), where(it), ` · ${it.kind === 'comment' ? 'comment' : 'post'}`,
+    it.author ? ` by ${it.source === 'reddit_api' ? 'u/' : ''}${it.author}` : '', ` · ${relDay(it.found_at.slice(0, 10))}`, it.score != null ? ` · ${it.score} points` : ''); }
   async function setQueue(it, patch) { await q(sb.from('inbox_items').update(patch).eq('id', it.id)); Object.assign(it, patch); }
 
   // ------------------------------------------------------------ triage
@@ -229,7 +231,7 @@ const oneLine = (s, n) => String(s || '').replace(/\s+/g, ' ').trim().slice(0, n
 
 function triagePrompt(items) {
   const flows = [...new Set(items.map((x) => x.flow_key).filter(Boolean))];
-  return `You're helping me find Reddit posts and comments where a reply from me would genuinely help someone, and where that help fits what I do. Skim fast; don't overthink.
+  return `You're helping me find posts and comments (Reddit, Hacker News, Stack Exchange, Bluesky) where a reply from me would genuinely help someone, and where that help fits what I do. Skim fast; don't overthink.
 
 What I do, by flow:
 ${flowBrief(flows)}
@@ -239,13 +241,13 @@ Pick an item only if a thoughtful, helpful reply from me fits: someone asking fo
 Answer with one line per pick and nothing else:
 id | why it's worth it (a few words) | the angle for my reply (one line)
 
-Items (id · flow · subreddit · post or comment · thread title — text):
-${items.map((x) => `${sid(x.id)} · ${x.flow_key || '?'} · ${placeName(x.place_id) || ''} · ${x.kind} · ${oneLine(x.title, 120)} — ${oneLine(x.snippet, 280)}`).join('\n')}`;
+Items (id · flow · where · post or comment · thread title — text):
+${items.map((x) => `${sid(x.id)} · ${x.flow_key || '?'} · ${where(x)} · ${x.kind} · ${oneLine(x.title, 120)} — ${oneLine(x.snippet, 280)}`).join('\n')}`;
 }
 
 function draftPrompt(items) {
   const flows = [...new Set(items.map((x) => x.flow_key).filter(Boolean))];
-  return `Write Reddit replies for me, one per item below, from my gist.
+  return `Write replies for me (Reddit, Hacker News, Stack Exchange or Bluesky: match the site), one per item below, from my gist.
 
 Who I am, by flow:
 ${flowBrief(flows)}
@@ -263,14 +265,14 @@ the comment
 Items:
 ${items.map((x) => `### ${sid(x.id)}
 Link: ${x.url}
-Subreddit: ${placeName(x.place_id) || ''} · replying to a ${x.kind}${x.author ? ` by u/${x.author}` : ''}
+Where: ${where(x)} · replying to a ${x.kind}${x.author ? ` by ${x.source === 'reddit_api' ? 'u/' : ''}${x.author}` : ''}
 Thread: ${oneLine(x.title, 200)}
 They wrote: ${oneLine(x.snippet, 600)}
 ${x.angle ? `Angle: ${x.angle}\n` : ''}My gist: ${x.gist.trim()}`).join('\n\n')}`;
 }
 
 function chromePrompt(items) {
-  return `Post these Reddit comments for me from my own logged-in Reddit account, one at a time.
+  return `Post these replies for me from my own logged-in accounts (the site is in each link), one at a time.
 
 For each item:
 1. Open the link. It points at either a post or a specific comment.
@@ -279,12 +281,12 @@ For each item:
 4. Paste the comment text exactly as given. Don't change it.
 5. Submit, check it appears, then wait about 2 minutes before the next one.
 
-Stop right away and tell me if Reddit shows a rate limit, a captcha or any warning about my account.
+Stop right away and tell me if any site shows a rate limit, a captcha or any warning about my account.
 When you finish, list the ids you posted and the ids you skipped (with the reason).
 
 ${items.map((x) => `### ${sid(x.id)}
 Link: ${x.url}
-Reply to: the ${x.kind}${x.author ? ` by u/${x.author}` : ''}
+Reply to: the ${x.kind}${x.author ? ` by ${x.source === 'reddit_api' ? 'u/' : ''}${x.author}` : ''}
 Comment:
 ${x.draft.trim()}`).join('\n\n')}`;
 }
