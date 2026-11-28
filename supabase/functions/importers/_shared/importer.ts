@@ -91,3 +91,32 @@ export function mondayOf(d: Date = new Date()): string {
   t.setUTCDate(t.getUTCDate() - ((t.getUTCDay() + 6) % 7));
   return t.toISOString().slice(0, 10);
 }
+
+// When to collect from: the last good run of this importer minus some overlap (duplicates are
+// ignored by url), or `firstS` seconds back on the first run.
+export async function sinceLast(db: SupabaseClient, importer: string, overlapS = 600, firstS = 3600): Promise<number> {
+  const { data } = await db.from('import_runs').select('started_at').eq('importer', importer).eq('status', 'ok')
+    .order('started_at', { ascending: false }).limit(1).maybeSingle();
+  return (data ? Date.parse(data.started_at) / 1000 : Date.now() / 1000 - firstS) - overlapS;
+}
+
+// Collected items nobody acted on are cleared after `days`, so the table stays small.
+export async function clearOld(db: SupabaseClient, source: string, days = 7): Promise<number> {
+  const cutoff = new Date(Date.now() - days * 86400000).toISOString();
+  const { count } = await db.from('inbox_items').delete({ count: 'exact' })
+    .eq('source', source).eq('status', 'new').or('queue.is.null,queue.eq.pass').lt('found_at', cutoff);
+  return count ?? 0;
+}
+
+// Plain text from the small HTML snippets APIs return.
+export function plain(html: string, max = 600): string {
+  return String(html || '').replace(/<p>/gi, ' ').replace(/<[^>]+>/g, '')
+    .replace(/&#x27;|&#39;/g, "'").replace(/&quot;/g, '"').replace(/&#x2F;/g, '/').replace(/&gt;/g, '>').replace(/&lt;/g, '<').replace(/&amp;/g, '&')
+    .replace(/\s+/g, ' ').trim().slice(0, max);
+}
+
+// settings → importers → <key> → queries: { flow_key: [phrase, …] }
+export function queriesByFlow(settings: Record<string, unknown>): [string, string[]][] {
+  const q = (settings.queries ?? {}) as Record<string, unknown>;
+  return Object.entries(q).filter(([, v]) => Array.isArray(v)).map(([k, v]) => [k, (v as unknown[]).map(String).filter(Boolean)]);
+}

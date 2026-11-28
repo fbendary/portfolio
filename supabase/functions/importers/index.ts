@@ -4,6 +4,9 @@
 //   POST /functions/v1/importers/reddit   karma + saved Reddit searches → metric_values, inbox_items
 //   POST /functions/v1/importers/f5bot    forwarded alert emails       → inbox_items
 //   POST /functions/v1/importers/csv      a CSV export as JSON          → metric_values
+//   POST /functions/v1/importers/hn       Hacker News stories, comments → inbox_items (queue)
+//   POST /functions/v1/importers/stackexchange  new questions           → inbox_items (queue)
+//   POST /functions/v1/importers/bluesky  posts matching phrases        → inbox_items (queue)
 //
 // Every call needs the importer secret (x-importer-secret header, or ?secret= for email forwarders),
 // and each importer must be switched on in settings → importers. All are off until you turn them on.
@@ -14,8 +17,11 @@ import { run, type Importer } from './_shared/importer.ts';
 import { reddit } from './reddit/index.ts';
 import { f5bot } from './f5bot/index.ts';
 import { csv } from './csv/index.ts';
+import { hn } from './hn/index.ts';
+import { stackexchange } from './stackexchange/index.ts';
+import { bluesky } from './bluesky/index.ts';
 
-const IMPORTERS: Record<string, Importer> = { reddit, f5bot, csv };
+const IMPORTERS: Record<string, Importer> = { reddit, f5bot, csv, hn, stackexchange, bluesky };
 
 const json = (data: unknown, status = 200) =>
   new Response(JSON.stringify(data), { status, headers: { 'Content-Type': 'application/json' } });

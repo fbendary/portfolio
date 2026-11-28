@@ -64,7 +64,7 @@ export async function render(root, ctx) {
   let items = [];
   const listBox = h('div');
   mount(root,
-    h('div', { class: 'page-head' }, h('div', null, h('h1', null, 'Inbox'), h('p', null, 'Threads you found or were alerted to. Help first; log what you do. Reddit posts collected every hour are in the Queue.'))),
+    h('div', { class: 'page-head' }, h('div', null, h('h1', null, 'Inbox'), h('p', null, 'Threads you found or were alerted to. Help first; log what you do. Posts collected every hour (Reddit, Hacker News, Stack Exchange, Bluesky) are in the Queue.'))),
     h('div', { class: 'grid2' },
       h('div', { class: 'stack' }, filters(), listBox),
       h('div', { class: 'stack' }, addPanel(), alertsPanel())));
@@ -79,7 +79,7 @@ export async function render(root, ctx) {
     listBox.classList.add('loading');
     try {
       items = await all((o) => {
-        let b = sb.from('inbox_items').select('*', o).neq('source', 'reddit_api'); // collected Reddit items live in the Queue
+        let b = sb.from('inbox_items').select('*', o).not('source', 'like', '%_api'); // collected items live in the Queue
         if (ctx.flow !== 'all') b = b.eq('flow_key', ctx.flow);
         if (status !== 'all') b = b.eq('status', status);
         if (channel) b = b.eq('channel_key', channel);

@@ -179,7 +179,7 @@ async function renderScreen() {
 
 async function refreshCounts() {
   try {
-    let inbox = sb.from('inbox_items').select('id', { count: 'exact', head: true }).eq('status', 'new').neq('source', 'reddit_api');
+    let inbox = sb.from('inbox_items').select('id', { count: 'exact', head: true }).eq('status', 'new').not('source', 'like', '%_api');
     let due = sb.from('leads').select('id', { count: 'exact', head: true }).lte('next_follow_up', today()).not('stage', 'in', '(client,lost)');
     let queue = sb.from('inbox_items').select('id', { count: 'exact', head: true }).eq('queue', 'approved');
     if (app.flow !== 'all') { inbox = inbox.eq('flow_key', app.flow); due = due.eq('flow_key', app.flow); queue = queue.eq('flow_key', app.flow); }

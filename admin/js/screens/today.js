@@ -15,7 +15,7 @@ export async function render(root, ctx) {
     activityDays({ from, flow: ctx.flow, cols: 'day,flow_key,channel_key,action_key,direction,template_id,place_id,n,links' }),
     activityDays({ from: t, to: t, cols: 'day,flow_key,channel_key,action_key,direction,template_id,place_id,n' }),
     q(flowFilter(sb.from('leads').select('id,name,company,flow_key,channel_key,stage,next_follow_up').lte('next_follow_up', addDays(t, 7)).not('stage', 'in', '(client,lost)').order('next_follow_up').limit(60))),
-    q(flowFilter(sb.from('inbox_items').select('*').eq('status', 'new').neq('source', 'reddit_api').order('found_at', { ascending: false }).limit(5))),
+    q(flowFilter(sb.from('inbox_items').select('*').eq('status', 'new').not('source', 'like', '%_api').order('found_at', { ascending: false }).limit(5))),
     q(sb.from('activities').select('id').limit(1)),
   ]);
   if (!ctx.alive()) return;
