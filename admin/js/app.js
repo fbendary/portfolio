@@ -4,6 +4,8 @@ import { config, connect, sb, loadRefs, refs, prefs, saveSetting, explain, all }
 import * as todayScreen from './screens/today.js';
 import * as inboxScreen from './screens/inbox.js';
 import * as queueScreen from './screens/queue.js';
+import * as prospectsScreen from './screens/prospects.js';
+import * as collectScreen from './screens/collect.js';
 import * as leadsScreen from './screens/leads.js';
 import * as activityScreen from './screens/activity.js';
 import * as metricsScreen from './screens/metrics.js';
@@ -16,6 +18,8 @@ const SCREENS = [
   { key: 'today', label: 'Today', mod: todayScreen },
   { key: 'inbox', label: 'Inbox', mod: inboxScreen },
   { key: 'queue', label: 'Queue', mod: queueScreen },
+  { key: 'prospects', label: 'Prospects', mod: prospectsScreen },
+  { key: 'collect', label: 'Collect', mod: collectScreen },
   { key: 'leads', label: 'Leads', mod: leadsScreen },
   { key: 'activity', label: 'Activity', mod: activityScreen },
   { key: 'metrics', label: 'Metrics', mod: metricsScreen },
@@ -181,9 +185,9 @@ async function renderScreen() {
 
 async function refreshCounts() {
   try {
-    let inbox = sb.from('inbox_items').select('id', { count: 'exact', head: true }).eq('status', 'new').not('source', 'like', '%_api');
+    let inbox = sb.from('inbox_items').select('id', { count: 'exact', head: true }).eq('status', 'new').in('source', ['manual', 'f5bot']);
     let due = sb.from('leads').select('id', { count: 'exact', head: true }).lte('next_follow_up', today()).not('stage', 'in', '(client,lost)');
-    let queue = sb.from('inbox_items').select('id', { count: 'exact', head: true }).eq('queue', 'approved');
+    let queue = sb.from('inbox_items').select('id', { count: 'exact', head: true }).eq('queue', 'approved').neq('kind', 'person');
     if (app.flow !== 'all') { inbox = inbox.eq('flow_key', app.flow); due = due.eq('flow_key', app.flow); queue = queue.eq('flow_key', app.flow); }
     const [a, b, c] = await Promise.all([inbox, due, queue]);
     app.counts = { inbox: a.count || 0, due: b.count || 0, queue: c.count || 0 };

@@ -79,7 +79,7 @@ export async function render(root, ctx) {
     listBox.classList.add('loading');
     try {
       items = await all((o) => {
-        let b = sb.from('inbox_items').select('*', o).not('source', 'like', '%_api'); // collected items live in the Queue
+        let b = sb.from('inbox_items').select('*', o).in('source', ['manual', 'f5bot']); // collected items live in the Queue and Prospects
         if (ctx.flow !== 'all') b = b.eq('flow_key', ctx.flow);
         if (status !== 'all') b = b.eq('status', status);
         if (channel) b = b.eq('channel_key', channel);

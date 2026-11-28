@@ -11,10 +11,10 @@ const STEPS = [
   { value: 'triage', label: 'Triage' }, { value: 'shortlist', label: 'Shortlist' },
   { value: 'post', label: 'Ready to post' }, { value: 'posted', label: 'Posted' },
 ];
-const COLS = 'id,flow_key,channel_key,place_id,url,title,snippet,found_at,source,score,status,kind,author,queue,reason,angle,gist,draft,exported_at';
+const COLS = 'id,flow_key,channel_key,place_id,url,title,snippet,found_at,source,score,status,kind,author,queue,reason,angle,gist,draft,exported_at,details';
 const sid = (id) => id.slice(0, 8);
-const SOURCE = { reddit_api: 'Reddit', hn_api: 'Hacker News', stackexchange_api: 'Stack Exchange', bluesky_api: 'Bluesky', f5bot: 'F5Bot', manual: 'Added by hand' };
-const where = (it) => placeName(it.place_id) || (it.source === 'stackexchange_api' ? `Stack Exchange · ${(it.url.match(/\/\/([^.]+)\./) || [])[1] || ''}` : SOURCE[it.source] || it.source);
+const SOURCE = { reddit_api: 'Reddit', hn_api: 'Hacker News', stackexchange_api: 'Stack Exchange', bluesky_api: 'Bluesky', fb_chrome: 'Facebook', f5bot: 'F5Bot', manual: 'Added by hand' };
+const where = (it) => placeName(it.place_id) || (it.source === 'fb_chrome' && it.details?.group ? `Facebook · ${it.details.group}` : null) || (it.source === 'stackexchange_api' ? `Stack Exchange · ${(it.url.match(/\/\/([^.]+)\./) || [])[1] || ''}` : SOURCE[it.source] || it.source);
 
 export async function render(root, ctx) {
   let step = STEPS.some((x) => x.value === ctx.sub) ? ctx.sub : 'triage';
@@ -26,7 +26,7 @@ export async function render(root, ctx) {
     body);
   await load();
 
-  function scoped(b) { return ctx.flow === 'all' ? b : b.eq('flow_key', ctx.flow); }
+  function scoped(b) { b = b.neq('kind', 'person'); return ctx.flow === 'all' ? b : b.eq('flow_key', ctx.flow); }
 
   async function load() {
     body.classList.add('loading');
@@ -35,7 +35,7 @@ export async function render(root, ctx) {
       const [untriaged, shortlist, ready] = await Promise.all([
         n((b) => b.is('queue', null).eq('status', 'new')), n((b) => b.eq('queue', 'shortlist')), n((b) => b.eq('queue', 'approved')),
       ]);
-      counts.textContent = `${fmt(untriaged)} to triage · ${fmt(shortlist)} shortlisted · ${fmt(ready)} ready to post. Reddit, Hacker News, Stack Exchange and Bluesky are collected every hour.`;
+      counts.textContent = `${fmt(untriaged)} to triage · ${fmt(shortlist)} shortlisted · ${fmt(ready)} ready to post. Reddit, Hacker News, Stack Exchange and Bluesky are collected every hour; Facebook posts come from Collect.`;
       const views = { triage, shortlist: shortlistView, post: postView, posted: postedView };
       const el = await views[step]({ untriaged, shortlist, ready });
       if (ctx.alive()) mount(body, el);
@@ -231,7 +231,7 @@ const oneLine = (s, n) => String(s || '').replace(/\s+/g, ' ').trim().slice(0, n
 
 function triagePrompt(items) {
   const flows = [...new Set(items.map((x) => x.flow_key).filter(Boolean))];
-  return `You're helping me find posts and comments (Reddit, Hacker News, Stack Exchange, Bluesky) where a reply from me would genuinely help someone, and where that help fits what I do. Skim fast; don't overthink.
+  return `You're helping me find posts and comments (Reddit, Hacker News, Stack Exchange, Bluesky, Facebook groups) where a reply from me would genuinely help someone, and where that help fits what I do. Skim fast; don't overthink.
 
 What I do, by flow:
 ${flowBrief(flows)}
@@ -247,7 +247,7 @@ ${items.map((x) => `${sid(x.id)} · ${x.flow_key || '?'} · ${where(x)} · ${x.k
 
 function draftPrompt(items) {
   const flows = [...new Set(items.map((x) => x.flow_key).filter(Boolean))];
-  return `Write replies for me (Reddit, Hacker News, Stack Exchange or Bluesky: match the site), one per item below, from my gist.
+  return `Write replies for me (Reddit, Hacker News, Stack Exchange, Bluesky or a Facebook group: match the site), one per item below, from my gist.
 
 Who I am, by flow:
 ${flowBrief(flows)}
