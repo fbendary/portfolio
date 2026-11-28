@@ -10,6 +10,7 @@ import * as metricsScreen from './screens/metrics.js';
 import * as sourcesScreen from './screens/sources.js';
 import * as planScreen from './screens/plan.js';
 import * as templatesScreen from './screens/templates.js';
+import * as roadmapScreen from './screens/roadmap.js';
 
 const SCREENS = [
   { key: 'today', label: 'Today', mod: todayScreen },
@@ -21,6 +22,7 @@ const SCREENS = [
   { key: 'sources', label: 'Sources', mod: sourcesScreen },
   { key: 'plan', label: 'Plan', mod: planScreen },
   { key: 'templates', label: 'Templates', mod: templatesScreen },
+  { key: 'roadmap', label: 'Roadmap', mod: roadmapScreen },
 ];
 
 const root = document.getElementById('app');

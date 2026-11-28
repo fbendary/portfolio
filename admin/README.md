@@ -38,6 +38,7 @@ The free plan has no automatic backups. Download one now and then from the menu 
 - **Metrics**: Output by channel and week; Response with reply, lead and close rates by channel, template and place; Audience for the platform numbers; Site for visits, referrers and tracked links; a weekly form for the numbers you copy by hand; and the CSV import. The period switch (7, 30, 90 days, all) compares each figure with the previous period.
 - **Sources**: per flow, turn channels on or off, put each in Now, Next or Later, mark it leading or testing, and set its weekly target and daily cap. Manage places and saved searches, and copy a tracked link for each channel.
 - **Plan**: Now, Next and Later per flow, the weekly rhythm with the actual leading/testing split from what you logged, the one-time setup checklist, the ground rules, and cold email rules by country (a summary, not legal advice).
+- **Roadmap**: what's built and running, built but switched off, waiting on you, agreed, proposed and ruled out. Its content is the `roadmap` row in `settings` (`supabase/migrations/0007_roadmap.sql`).
 - **Templates**: copy, edit and the reply rate of every template.
 
 "All flows" in the switcher is a view across the four flows, not a fifth flow.
