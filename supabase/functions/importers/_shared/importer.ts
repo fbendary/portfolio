@@ -16,6 +16,8 @@ export type InboxRow = {
   found_at?: string;
   score?: number | null;
   source: string;
+  kind?: 'post' | 'comment';
+  author?: string;
 };
 
 export type MetricRow = {

@@ -3,6 +3,7 @@ import { h, mount, seg, switchEl, toast, download, setTz, browserTz, today, lsGe
 import { config, connect, sb, loadRefs, refs, prefs, saveSetting, explain, all } from './db.js';
 import * as todayScreen from './screens/today.js';
 import * as inboxScreen from './screens/inbox.js';
+import * as queueScreen from './screens/queue.js';
 import * as leadsScreen from './screens/leads.js';
 import * as activityScreen from './screens/activity.js';
 import * as metricsScreen from './screens/metrics.js';
@@ -13,6 +14,7 @@ import * as templatesScreen from './screens/templates.js';
 const SCREENS = [
   { key: 'today', label: 'Today', mod: todayScreen },
   { key: 'inbox', label: 'Inbox', mod: inboxScreen },
+  { key: 'queue', label: 'Queue', mod: queueScreen },
   { key: 'leads', label: 'Leads', mod: leadsScreen },
   { key: 'activity', label: 'Activity', mod: activityScreen },
   { key: 'metrics', label: 'Metrics', mod: metricsScreen },
@@ -24,7 +26,7 @@ const SCREENS = [
 const root = document.getElementById('app');
 
 export const app = {
-  flow: 'all', route: 'today', sub: '', params: new URLSearchParams(), counts: { inbox: 0, due: 0 },
+  flow: 'all', route: 'today', sub: '', params: new URLSearchParams(), counts: { inbox: 0, due: 0, queue: 0 },
   // Navigate: app.go('leads', id, { stage: 'replied' })
   go(route, sub = '', params = {}) {
     const p = new URLSearchParams(params);
@@ -145,7 +147,7 @@ function paintShell() {
     onclick: () => app.setFlow(f.key),
   }, f.name)));
   mount(shell.tabsEl, SCREENS.map((x) => {
-    const n = x.key === 'inbox' ? app.counts.inbox : x.key === 'today' ? app.counts.due : 0;
+    const n = x.key === 'inbox' ? app.counts.inbox : x.key === 'today' ? app.counts.due : x.key === 'queue' ? app.counts.queue : 0;
     const href = `#/${x.key}${app.flow !== 'all' ? `?flow=${app.flow}` : ''}`;
     return h('a', { href, 'aria-current': app.route === x.key ? 'page' : null }, x.label, n ? h('span', { class: 'count', 'aria-label': `${n} waiting` }, n) : null);
   }));
@@ -177,11 +179,12 @@ async function renderScreen() {
 
 async function refreshCounts() {
   try {
-    let inbox = sb.from('inbox_items').select('id', { count: 'exact', head: true }).eq('status', 'new');
+    let inbox = sb.from('inbox_items').select('id', { count: 'exact', head: true }).eq('status', 'new').neq('source', 'reddit_api');
     let due = sb.from('leads').select('id', { count: 'exact', head: true }).lte('next_follow_up', today()).not('stage', 'in', '(client,lost)');
-    if (app.flow !== 'all') { inbox = inbox.eq('flow_key', app.flow); due = due.eq('flow_key', app.flow); }
-    const [a, b] = await Promise.all([inbox, due]);
-    app.counts = { inbox: a.count || 0, due: b.count || 0 };
+    let queue = sb.from('inbox_items').select('id', { count: 'exact', head: true }).eq('queue', 'approved');
+    if (app.flow !== 'all') { inbox = inbox.eq('flow_key', app.flow); due = due.eq('flow_key', app.flow); queue = queue.eq('flow_key', app.flow); }
+    const [a, b, c] = await Promise.all([inbox, due, queue]);
+    app.counts = { inbox: a.count || 0, due: b.count || 0, queue: c.count || 0 };
     paintShell();
   } catch { /* counts are a nicety */ }
 }
